@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:hive_nosql_db/BOXES/box.dart';
+import 'package:hive_nosql_db/MODEL/diarymodel.dart';
 import 'package:hive_nosql_db/WIDGET/widgets.dart';
 
 class DiaryScreen extends StatefulWidget {
@@ -35,9 +38,54 @@ class _DiaryScreenState extends State<DiaryScreen> {
           ],
         ),
       ),
-      body: Column(
-        children: [],
-      ),
+      body: ValueListenableBuilder<Box<DiaryModel>>(
+          valueListenable: Boxes.getNotesData().listenable(),
+          builder: (context, box, _) {
+            var data = box.values.toList().cast<DiaryModel>();
+            return ListView.builder(
+                itemCount: box.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(data[index].title.toString(),style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),),
+                              const Spacer(),
+                              InkWell(
+                                onTap: () {
+                                  editDiary(
+                                      context,
+                                      titleController,
+                                      descriptionController,
+                                      data[index],
+                                      data[index].title.toString(),
+                                      data[index].description.toString());
+                                },
+                                child: const Icon(Icons.edit),
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  delete(data[index]);
+                                },
+                                child: const Icon(Icons.delete),
+                              )
+                            ],
+                          ),
+                          Text(data[index].description.toString()),
+                        ],
+                      ),
+                    ),
+                  );
+                });
+          }),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.orangeAccent,
         onPressed: () {

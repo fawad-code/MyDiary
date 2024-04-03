@@ -4,7 +4,7 @@ part 'diarymodel.g.dart';
 
 
 @HiveType(typeId: 0)
-class DiaryModel {
+class DiaryModel  extends HiveObject {
 
   @HiveField(0)
   String title;
